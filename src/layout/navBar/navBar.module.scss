@@ -1,0 +1,52 @@
+.signInButton,
+.signOutButton,
+.profileName {
+  font-size: 13px;
+}
+
+.containerNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 20px;
+  height: 50px;
+
+  a.router-link-exact-active {
+    color: #42b983;
+  }
+
+  .containerNavLogo {
+    display: flex;
+    align-items: center;
+  }
+
+  .containerNavLogoImage {
+    max-width: 100%;
+    width: 200px;
+
+    @media (max-width: 479px) {
+      width: 150px;
+
+    }
+  }
+
+}
+
+.containerNavItem {
+  text-decoration: none;
+  margin-right: 0.5rem;
+  margin-left: 1rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+}
+
+.profileName {
+  margin: 0 10px;
+}
+
+.mainNavItem {
+  margin-right: 10px;
+}

@@ -1,0 +1,298 @@
+swagger: '2.0'
+info:
+  title: Bank Argent Transaction API documentation
+  description: Contains API endpoints for transaction features
+  version: '1.0.0'
+  termsOfService: 'http://swagger.io/terms/'
+host: localhost:3001
+basePath: /api/v1
+schemes:
+  - http
+
+# path for each API requests
+paths:
+  /user/transactions:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Current month transaction
+      summary: User's transactions for a specific period
+      description: API endpoint to fetch the transactions. If the dates are not provided, current month transactions will be displayed.
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          type: string
+          required: true
+        - in: query
+          name: month
+          required: false
+          type: integer
+          description: Desired month
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: User's transactions are loaded successfully
+          schema:
+            $ref: '#/definitions/Transactions'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+          
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - Create transaction
+      summary: Create a new transaction
+      description: Create a new transaction
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          type: string
+          required: true
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/NewTransaction'
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: New transaction created
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+
+  /user/transactions/{transactionId}:
+    parameters:
+      - in: path
+        name: transactionId
+        required: true
+        type: integer
+        description: An ID of transaction that has been selected by user
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Read transaction details
+      summary: View the detail of user's selected transaction
+      description: API endpoint to fetch the details of selected transaction
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          type: string
+          required: true
+        - in: path
+          name: transactionId
+          required: true
+          type: integer
+          description: An ID of transaction that has been selected by user
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: User's transaction successfully loaded
+          schema:
+            $ref: '#/definitions/SingleTransaction'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+    put:
+      security:
+        - Bearer: []
+      tags:
+        - Update transactions
+      summary: Modify a transaction by transaction ID
+      description: API endpoint to modify specific transaction. To add or update a note, provide value as string in the request body. To delete a note, provide "null" as a value in the request body.
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          type: string
+          required: true
+        - in: path
+          name: transactionId
+          required: true
+          type: integer
+          description: An ID of transaction that has been selected by user
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateBody'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: User's transaction successfully modified
+          schema:
+            $ref: '#/definitions/SingleTransaction'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+    
+    delete:
+      security:
+        - Bearer: []
+      tags:
+        - Delete transaction
+      summary: Delete a transaction by transaction ID
+      description: API endpoint to delete a specific transaction
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          type: string
+          required: true
+        - in: path
+          name: transactionId
+          required: true
+          type: integer
+          description: The ID of the transaction to be deleted
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transaction successfully deleted
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+
+# reusable body
+definitions:
+  Transactions:
+    type: object
+    properties:
+      status:
+        type: integer
+        example: 200
+      message:
+        type: string
+        example: Success
+      transactions:
+        type: array
+        items:
+          $ref: '#/definitions/Transaction'
+  NewTransaction:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Transaction ID
+        example: 20
+      date:
+        type: string
+        format: date-time
+        description: Transaction date and time
+        example: '2023-07-07T10:30:00.000Z'
+      description:
+        type: string
+        description: Transaction description
+        example: New transaction
+      amount:
+        type: integer
+        format: int32
+        description: Transaction amount
+        example: 100
+      balance:
+        type: string
+        description: Account balance after transaction
+        example: 5000
+      type:
+        type: string
+        description: Transaction type
+        example: Expense
+      category:
+        type: string
+        description: Transaction category
+        example: Food
+      notes:
+        type: string
+        description: Transaction notes
+        example: Lunch
+  SingleTransaction:
+    type: object
+    properties:
+      status:
+        type: integer
+        example: 200
+      message:
+        type: string
+        example: Success
+      transaction:
+        $ref: '#/definitions/Transaction'
+  UpdateBody:
+    type: object
+    properties:
+      category:
+        $ref: '#/definitions/TransactionType'
+      notes:
+        type: string
+        example: Cake
+  Transaction:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Transaction ID
+        example: 20
+      date:
+        type: string
+        format: date-time
+        description: Transaction date and time
+        example: '2023-05-25T11:00:32.766Z'
+      description:
+        type: string
+        description: Transaction description
+        example: Golden Sun Bakery
+      amount:
+        type: integer
+        format: int32
+        description: Transaction amount
+        example: 40
+      balance:
+        type: string
+        description: Account balance after transaction
+        example: 151,410,000,000
+      type:
+        type: string
+        description: Transaction type
+        example: Grocery
+      category:
+        type: string
+        description: Transaction category
+        example: Household
+      notes:
+        type: string
+        description: Transaction notes
+        example: Cake
+  TransactionType:
+    type: string
+    enum:
+      - Travel
+      - Health
+      - Education
+      - Groceries
+      - Utilities
+      - Household
+      - Transportation
+      - Leisure
+      - Shopping
+    example: Household
