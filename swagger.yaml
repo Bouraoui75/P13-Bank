@@ -17,8 +17,8 @@ paths:
         - Bearer: []
       tags:
         - Current month transaction
-      summary: User's transactions for a specific period
-      description: API endpoint to fetch the transactions. If the dates are not provided, current month transactions will be displayed.
+      summary: User's transactions for a specific period, grouped by account
+      description: Fetch user's transactions for the current month grouped by account if no dates are provided.
       parameters:
         - in: header
           name: Authorization
@@ -34,14 +34,51 @@ paths:
         - application/json
       responses:
         '200':
-          description: User's transactions are loaded successfully
+          description: User's transactions grouped by account are loaded successfully
           schema:
-            $ref: '#/definitions/Transactions'
+            $ref: '#/definitions/TransactionsByAccount'
         '400':
           description: Invalid Fields
         '500':
           description: Internal Server Error
-          
+
+definitions:
+  TransactionsByAccount:
+    type: object
+    properties:
+      status:
+        type: integer
+      message:
+        type: string
+      accounts:
+        type: array
+        items:
+          $ref: '#/definitions/Account'
+
+  Account:
+    type: object
+    properties:
+      accountId:
+        type: integer
+      transactions:
+        type: array
+        items:
+          $ref: '#/definitions/Transaction'
+
+  Transaction:
+    type: object
+    properties:
+      id:
+        type: integer
+      date:
+        type: string
+        format: date-time
+      description:
+        type: string
+      amount:
+        type: number
+        format: float
+ 
     post:
       security:
         - Bearer: []
